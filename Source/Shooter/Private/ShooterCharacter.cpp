@@ -779,6 +779,11 @@ void AShooterCharacter::FinishReloading()
 	}
 }
 
+void AShooterCharacter::FinishEquipping()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+}
+
 void AShooterCharacter::GrabClip()
 {
 	if (EquippedWeapon == nullptr) return;
@@ -947,7 +952,7 @@ void AShooterCharacter::FiveKeyPressed()
 
 void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 NewItemIndex)
 {
-	if ((CurrentItemIndex == NewItemIndex) || (NewItemIndex > Inventory.Num()) || CombatState != ECombatState::ECS_Unoccupied) return;
+	if ((CurrentItemIndex == NewItemIndex) || (NewItemIndex >= Inventory.Num()) || CombatState != ECombatState::ECS_Unoccupied) return;
 
 	auto OldEquippedWeapon = EquippedWeapon;
 	auto NewEquippedWeapon = Cast<AWeapon>(Inventory[NewItemIndex]);
@@ -956,6 +961,14 @@ void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 New
 
 	OldEquippedWeapon->SetItemState(EItemState::EIS_PickedUp);
 	NewEquippedWeapon->SetItemState(EItemState::EIS_Equipped);
+
+	CombatState = ECombatState::ECS_Equipping;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && EquipMontage)
+	{
+		AnimInstance->Montage_Play(EquipMontage, 1.0f);
+		AnimInstance->Montage_JumpToSection(FName("Equip"));
+	}
 }
 
 int32 AShooterCharacter::GetInterpLocationIndex()

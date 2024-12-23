@@ -39,6 +39,7 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	{
 		bCrouching = ShooterCharacter->GetCrouching();
 		bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
+		bEquipping = ShooterCharacter->GetCombatState() == ECombatState::ECS_Equipping;
 		// 获取玩家横向速度
 		FVector Velocity { ShooterCharacter->GetVelocity() };
 		Velocity.Z = 0; //相当于归一化? 去掉玩家Z轴的影响
@@ -166,7 +167,7 @@ void UShooterAnimInstance::TurnInPlace()
 	// 设置后坐力
 	if (bTurningInPlace) // 在原地转身 
 	{
-		if (bReloading) // 重载
+		if (bReloading || bEquipping) // 重载
 		{
 			RecoilWight= 1.f;
 		}
@@ -179,7 +180,7 @@ void UShooterAnimInstance::TurnInPlace()
 	{
 		if (bCrouching)
 		{
-			if (bReloading)
+			if (bReloading || bEquipping)
 			{
 				RecoilWight= 1.f;
 			}
@@ -190,7 +191,7 @@ void UShooterAnimInstance::TurnInPlace()
 		}
 		else
 		{
-			if (bAiming || bReloading)
+			if (bAiming || bReloading || bEquipping)
 			{
 				RecoilWight= 1.f;
 			}

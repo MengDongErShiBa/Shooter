@@ -126,6 +126,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crouching, meta = (AllowPrivateAccess = "true"));
 	bool bCrouching;
 
+	// 是否蹲伏  true when crouching
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crouching, meta = (AllowPrivateAccess = "true"));
+	bool bEquipping;
+
 	// 根据原地转弯和瞄准改变后坐力
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	float RecoilWight;

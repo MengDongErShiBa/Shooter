@@ -16,6 +16,7 @@ enum class ECombatState : uint8
 	ECS_Unoccupied UMETA(DisplayName = "无事发生"),
 	ECS_FireTimerInProgress UMETA(DisplayName = "正在开火"),
 	ECS_Reloading UMETA(DisplayName = "重新装载"),
+	ECS_Equipping UMETA(DisplayName = "装备中"),
 
 	ECS_MAX UMETA(DisplayName = "默认最大值")
 };
@@ -194,6 +195,10 @@ protected:
 	// 动画蓝图通过通知调用 完成重载弹药动作
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
+
+	// 动画蓝图通过通知调用 完成装备
+	UFUNCTION(BlueprintCallable)
+	void FinishEquipping();
 
 	// 动画蓝图内通过通知调用 抓住弹匣
 	UFUNCTION(BlueprintCallable)
@@ -448,6 +453,10 @@ private:
 	// 重新装载弹药蒙太奇
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta=(AllowPrivateAccess = "true"))
 	UAnimMontage* ReloadMontage;
+
+	// 重新装载弹药蒙太奇
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta=(AllowPrivateAccess = "true"))
+	UAnimMontage* EquipMontage;
 
 	// 武器骨骼位移，重新加载时第一次抓住弹匣，弹匣的位置
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta=(AllowPrivateAccess = "true"))
