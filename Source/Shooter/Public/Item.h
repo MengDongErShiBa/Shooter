@@ -84,7 +84,7 @@ protected:
 	FVector GetInterpLocation();
 
 	// 播放声音
-	void PlayPickupSound();
+	void PlayPickupSound(bool bForcePlaySound = false);
 	
 	// 初始化自定义深度
 	virtual void InitializeCustomDepth();
@@ -107,9 +107,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// 在角色调用
-	void PlayEquipSound();
-
-protected:
+	void PlayEquipSound(bool bForcePlaySound = false);
 
 private:
 	// Item的骨骼Mesh
@@ -260,6 +258,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta=(AllowPrivateAccess = "true"))
 	int32 SlotIndex;
 
+	/** 当角色的库存是满的时候 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta=(AllowPrivateAccess = "true"))
+	bool bCharacterInventoryFull;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
@@ -272,10 +274,12 @@ public:
 	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 	FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
 	FORCEINLINE void SetSlotIndex(int32 Index) { SlotIndex = Index; }
+	FORCEINLINE void SetCharacter(AShooterCharacter* Char) { Character = Char; }
+	FORCEINLINE void SetCharacterInventoryFull(bool bFull) { bCharacterInventoryFull = bFull; }
 
 	// called from the AShooterCharacter class
 	// 从ShooterCharacter调用，开始曲线移动
-	void StartItemCurve(AShooterCharacter* Char);
+	void StartItemCurve(AShooterCharacter* Char, bool bForcePlaySound = false);
 
 	// 开启自定义深度
 	virtual void EnableCustomDepth();

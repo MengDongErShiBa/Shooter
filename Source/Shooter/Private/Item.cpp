@@ -35,7 +35,8 @@ AItem::AItem():
 	FresnelExponent(3.f),
 	FresnelReflectFraction(4.f),
 	PulseCurveTime(5.f),
-	SlotIndex(0)
+	SlotIndex(0),
+	bCharacterInventoryFull(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -322,11 +323,18 @@ FVector AItem::GetInterpLocation()
 	}
 }
 
-void AItem::PlayPickupSound()
+void AItem::PlayPickupSound(bool bForcePlaySound)
 {
 	if (Character)
 	{
-		if (Character->ShouldPlayPickupSound())
+		if (bForcePlaySound)
+		{
+			if (PickupSound)
+			{
+				UGameplayStatics::PlaySound2D(this, PickupSound);
+			}
+		}
+		else if (Character->ShouldPlayPickupSound())
 		{
 			Character->StartPickSoundTimer();
 			if (PickupSound)
@@ -418,11 +426,18 @@ void AItem::DisableGlowMaterial()
 	}
 }
 
-void AItem::PlayEquipSound()
+void AItem::PlayEquipSound(bool bForcePlaySound)
 {
 	if (Character)
 	{
-		if (Character->ShouldEquipSound())
+		if (bForcePlaySound)
+		{
+			if (EquipSound)
+			{
+				UGameplayStatics::PlaySound2D(this, EquipSound);
+			}
+		}
+		else if (Character->ShouldEquipSound())
 		{
 			Character->StartEquipSoundTimer();
 			if (EquipSound)
@@ -464,7 +479,7 @@ void AItem::SetItemState(EItemState State)
 	SetItemProperties(State);
 }
 
-void AItem::StartItemCurve(AShooterCharacter* Char)
+void AItem::StartItemCurve(AShooterCharacter* Char, bool bForcePlaySound)
 {
 	// 存储角色句柄
 	Character = Char;
@@ -474,7 +489,7 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
 	// 增加1
 	Character->IncrementInterpLocItemCount(InterpLocIndex, 1);
 
-	PlayPickupSound();
+	PlayPickupSound(bForcePlaySound);
 
 	// 获取Actor位置
 	ItemInterpStartLocation = GetActorLocation();

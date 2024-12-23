@@ -158,6 +158,7 @@ void AShooterCharacter::BeginPlay()
 	// 关闭深度和发光效果
 	EquippedWeapon->DisableCustomDepth();
 	EquippedWeapon->DisableGlowMaterial();
+	EquippedWeapon->SetCharacter(this);
 
 	// 初始化弹药
 	InitializeAmmoMap();
@@ -511,6 +512,16 @@ void AShooterCharacter::TraceForItems()
 				// 显示Item的拾取UI
 				TraceHitItem->GetPickupWidget()->SetVisibility(true);
 				TraceHitItem->EnableCustomDepth();
+
+				if (Inventory.Num() >= INVENTORY_CAPACITY)
+				{
+					// 库存已满
+					TraceHitItem->SetCharacterInventoryFull(true);
+				}
+				else
+				{
+					TraceHitItem->SetCharacterInventoryFull(false);
+				}
 			}
 
 			if (TraceHitItemLastFrame)
@@ -599,7 +610,7 @@ void AShooterCharacter::SelectButtonPressed()
 	{
 		// auto TraceHitWeapon = Cast<AWeapon>(TraceHitItem);
 		// SwapWeapon(TraceHitWeapon);
-		TraceHitItem->StartItemCurve(this);
+		TraceHitItem->StartItemCurve(this, true);
 
 		if (TraceHitItem->GetPickupSound())
 		{
@@ -969,6 +980,7 @@ void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 New
 		AnimInstance->Montage_Play(EquipMontage, 1.0f);
 		AnimInstance->Montage_JumpToSection(FName("Equip"));
 	}
+	NewEquippedWeapon->PlayEquipSound(true);
 }
 
 int32 AShooterCharacter::GetInterpLocationIndex()
