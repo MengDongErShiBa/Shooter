@@ -38,6 +38,7 @@ struct FInterpLocation
 class AAmmo;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquipItemDelegate, int32, CurrentSlotIndex, int32, NewSlotIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHightlightIconDelegate, int32, SlotIndex, bool, bStartAnimation);
 
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
@@ -150,7 +151,7 @@ protected:
 	class AWeapon* SpawnDefaultWeapon();
 
 	// 装备武器
-	void EquipWeapon(AWeapon* WeaponToEquip);
+	void EquipWeapon(AWeapon* WeaponToEquip, bool bSwapping = false);
 
 	 // Detach weapon and let it fall to the ground
 	// 分离武器并让他掉落地面
@@ -240,6 +241,11 @@ protected:
 	// 交换库存物品
 	void ExchangeInventoryItems(int32 CurrentItemIndex, int32 NewItemIndex);
 
+	// 获取空的插槽
+	int32 GetEmptyInventorySlot();
+
+	// 高亮显示插槽
+	void HighlightInventorySlot();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -553,7 +559,14 @@ private:
 	// 在装备时发送槽位信息给InventoryBar
 	UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
 	FEquipItemDelegate EquipItemDelegate;
-	
+
+	// 用于发送播放图标动画的插槽信息的委托
+	UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
+	FHightlightIconDelegate HighlightIconDelegate;
+
+	// 当前高亮的插槽
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Inventory, meta=(AllowPrivateAccess="true"))
+	int32 HighlightedSlot;
 public:
 	/**
 	 * 获取弹簧臂
@@ -602,4 +615,7 @@ public:
 	void StartPickSoundTimer();
 	void StartEquipSoundTimer();
 	// End Item中调用
+
+	// 取消高亮显示
+	void UnHighlightInventorySlot();
 };

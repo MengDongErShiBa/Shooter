@@ -94,6 +94,7 @@ void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		if (ShooterCharacter)
 		{
 			ShooterCharacter->IncrementOverlappedItemCount(1);
+			ShooterCharacter->UnHighlightInventorySlot();
 		}
 	}
 }
@@ -243,6 +244,8 @@ void AItem::FinishInterping()
 		Character->GetPickupItem(this);
 		// // 这里考虑要不要，因为那边已经设计了装备完毕的状态，不过考虑有背包，暂时不处理
 		// SetItemState(EItemState::EIS_PickedUp);
+
+		Character->UnHighlightInventorySlot();
 	}
 
 	// 设置为正常缩放
