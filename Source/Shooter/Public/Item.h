@@ -65,7 +65,10 @@ struct FItemRarityTable : public FTableRowBase
 	int32 NumberOfStarts;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture* IconBackground;
+	UTexture2D* IconBackground;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 CustomDepthStencil;
 };
 
 
@@ -158,7 +161,7 @@ private:
 	int32 ItemCount;
 
 	// 物品稀有度，用于显示UI星
-	UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Item Properties", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = Rarity, meta=(AllowPrivateAccess = "true"))
 	EItemRarity ItemRarity;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Item Properties", meta=(AllowPrivateAccess = "true"))
@@ -265,9 +268,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta=(AllowPrivateAccess = "true"))
 	float FresnelReflectFraction;
 
-	// 库存系统中，此项目的背景
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta=(AllowPrivateAccess = "true"))
-	UTexture2D* IconBackground;
+	// // 库存系统中，此项目的背景
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta=(AllowPrivateAccess = "true"))
+	// UTexture2D* IconBackground;
 
 	// 库存系统中，Item的Icon
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta=(AllowPrivateAccess = "true"))
@@ -288,6 +291,26 @@ private:
 	// Item稀有度表
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Inventory, meta=(AllowPrivateAccess = "true"))
 	class UDataTable* ItemRarityDataTable;
+
+	// 发光材质颜色
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta=(AllowPrivateAccess = "true"))
+	FLinearColor GlowColor;
+	
+	// 拾取Widget的颜色
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta=(AllowPrivateAccess = "true"))
+	FLinearColor LightColor;
+	
+	// 拾取Widget暗色
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta=(AllowPrivateAccess = "true"))
+	FLinearColor DarkColor;
+
+	// Widget显示星星
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta=(AllowPrivateAccess = "true"))
+	int32 NumberOfStars;
+
+	// Widget背景
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Rarity, meta=(AllowPrivateAccess = "true"))
+	UTexture2D* IconBackground;
 
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
