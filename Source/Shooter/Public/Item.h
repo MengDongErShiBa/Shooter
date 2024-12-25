@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/DataTable.h"
 #include "Item.generated.h"
 
 /**
@@ -43,6 +44,28 @@ enum class EItemType : uint8
 	EIT_Weapon UMETA(DisplayName = "武器"),
 
 	EIT_Max UMETA(DisplayName = "最大值")
+};
+
+USTRUCT(BlueprintType)
+struct FItemRarityTable : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	// 发光颜色
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor GlowColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor LightColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor DarkColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 NumberOfStarts;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture* IconBackground;
 };
 
 
@@ -261,6 +284,10 @@ private:
 	/** 当角色的库存是满的时候 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta=(AllowPrivateAccess = "true"))
 	bool bCharacterInventoryFull;
+
+	// Item稀有度表
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Inventory, meta=(AllowPrivateAccess = "true"))
+	class UDataTable* ItemRarityDataTable;
 
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
