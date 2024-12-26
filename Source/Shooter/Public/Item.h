@@ -320,13 +320,18 @@ public:
 	void SetItemState(EItemState State);
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
 	FORCEINLINE USoundCue* GetPickupSound() const { return PickupSound; }
+	FORCEINLINE void SetPickupSound(USoundCue* Cue) { PickupSound = Cue; }
 	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
+	FORCEINLINE void SetEquipSound(USoundCue* Cue) { EquipSound = Cue; }
 	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 	FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
 	FORCEINLINE void SetSlotIndex(int32 Index) { SlotIndex = Index; }
 	FORCEINLINE void SetCharacter(AShooterCharacter* Char) { Character = Char; }
 	FORCEINLINE void SetCharacterInventoryFull(bool bFull) { bCharacterInventoryFull = bFull; }
-
+	FORCEINLINE void SetItemName(FString Name) { ItemName = Name; }
+	FORCEINLINE void SetIconItem(UTexture2D* Icon) { IconItem = Icon; }
+	FORCEINLINE void SetAmmoIcon(UTexture2D* Icon) { IconAmmoItem = Icon; }
+	
 	// called from the AShooterCharacter class
 	// 从ShooterCharacter调用，开始曲线移动
 	void StartItemCurve(AShooterCharacter* Char, bool bForcePlaySound = false);

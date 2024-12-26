@@ -5,15 +5,49 @@
 #include "CoreMinimal.h"
 #include "Item.h"
 #include "AmmoType.h"
+#include "Engine/DataTable.h"
 #include "Weapon.generated.h"
 
-UENUM(Blueprintable)
+UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
 	EWT_SubmachineGun UMETA(DisplayName = "冲锋枪"),
 	EWT_AssaultRifle UMETA(DisplayName = "突击步枪"),
 
 	EWT_Max UMETA(DisplayName = "最大值")
+};
+
+USTRUCT(BlueprintType)
+struct FWeaponDataTable : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAmmoType AmmoType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 WeaponAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MagazineCapacity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USoundCue* PickupSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundCue* EquipSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMesh* ItemMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ItemName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* InventoryIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* AmmoIcon;
 };
 
 /**
@@ -30,6 +64,9 @@ public:
 protected:
 	// 停止下落
 	void StopFalling();
+
+	// 重写初始化函数
+	virtual void OnConstruction(const FTransform& Transform) override;
 private:
 	FTimerHandle ThrowWeaponTimer;
 	float ThrowWeaponTime;
@@ -62,6 +99,10 @@ private:
 	// 可移动的骨骼名称
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta=(AllowPrivateAccess = "true"))
 	FName ClipBoneName;
+
+	// 武器属性表格
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Properties", meta=(AllowPrivateAccess = "true"))
+	UDataTable* WeaponDataTable;
 public:
 	// 扔出武器，施加冲击力
 	void ThrowWeapon();
