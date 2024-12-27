@@ -48,6 +48,12 @@ struct FWeaponDataTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture2D* AmmoIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInstance* MaterialInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaterialIndex;
 };
 
 /**
@@ -103,6 +109,8 @@ private:
 	// 武器属性表格
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Properties", meta=(AllowPrivateAccess = "true"))
 	UDataTable* WeaponDataTable;
+
+	int32 PreviousMaterialIndex;
 public:
 	// 扔出武器，施加冲击力
 	void ThrowWeapon();
