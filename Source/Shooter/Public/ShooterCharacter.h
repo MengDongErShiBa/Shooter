@@ -311,18 +311,6 @@ private:
 	float MouseAimingLookUpRate;
 	
 	/**
-	 * 枪声
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta=(AllowPrivateAccess = "true"))
-	USoundCue* FireSound;
-
-	/**
-	 * 枪口粒子效果
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta=(AllowPrivateAccess = "true"))
-	UParticleSystem* MuzzleFlash;
-
-	/**
 	 * 开火蒙太奇
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta=(AllowPrivateAccess = "true"))
@@ -400,9 +388,6 @@ private:
 
 	// 可以开火为True，等待计时器为false
 	bool bShouldFire;
-
-	// 自动射击速率
-	float AutomaticFireRate;
 
 	// 射击间距计时器
 	FTimerHandle AutoFireTimer;
@@ -618,4 +603,6 @@ public:
 
 	// 取消高亮显示
 	void UnHighlightInventorySlot();
+
+	FORCEINLINE AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 };

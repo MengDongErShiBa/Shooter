@@ -4,6 +4,7 @@
 #include "ShooterAnimInstance.h"
 
 #include "ShooterCharacter.h"
+#include "Weapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -24,7 +25,9 @@ UShooterAnimInstance::UShooterAnimInstance() :
 	CharacterRotationLastFrame(FRotator(0.F)),
 	YawDelta(0.f),
 	RecoilWight(0.f),
-	bTurningInPlace(false)
+	bTurningInPlace(false),
+	EquippedWeaponType(EWeaponType::EWT_Max),
+	bShouldUseFABRIK(false)
 {
 }
 
@@ -40,6 +43,7 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		bCrouching = ShooterCharacter->GetCrouching();
 		bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bEquipping = ShooterCharacter->GetCombatState() == ECombatState::ECS_Equipping;
+		bShouldUseFABRIK = ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied || ShooterCharacter->GetCombatState() == ECombatState::ECS_FireTimerInProgress;
 		// 获取玩家横向速度
 		FVector Velocity { ShooterCharacter->GetVelocity() };
 		Velocity.Z = 0; //相当于归一化? 去掉玩家Z轴的影响
@@ -95,6 +99,12 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		else
 		{
 			OffsetState = EOffsetState::EOS_Hip;
+		}
+
+		// 检查角色是否装备有效武器
+		if (ShooterCharacter->GetEquippedWeapon())
+		{
+			EquippedWeaponType = ShooterCharacter->GetEquippedWeapon()->GetWeaponType();
 		}
 	}
 

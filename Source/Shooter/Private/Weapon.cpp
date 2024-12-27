@@ -11,7 +11,13 @@ AWeapon::AWeapon() :
 	WeaponType(EWeaponType::EWT_SubmachineGun),
 	AmmoType(EAmmoType::EAT_9mm),
 	ReloadMontageSection(FName(TEXT("ReloadSMG"))),
-	ClipBoneName(TEXT("smg_clip"))
+	ClipBoneName(TEXT("smg_clip")),
+	SlideDisplacement(0),
+	SlideDisplacementTime(0.2f),
+	bMovingSlide(false),
+	MaxSlideDisplacement(4.f),
+	MaxRecoilRotation(20.f),
+	bAutoMatic(true)
 {
 	// 开启Tick
 	PrimaryActorTick.bCanEverTick = true;
@@ -28,6 +34,9 @@ void AWeapon::Tick(float DeltaSeconds)
 		// 设置世界旋转
 		GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
 	}
+
+	// 刷新枪膛位置
+	UpdateSlideDisplacement();
 }
 
 void AWeapon::ThrowWeapon()
@@ -84,6 +93,9 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 		case EWeaponType::EWT_AssaultRifle:
 			WeaponDataRow = WeaponTableObject->FindRow<FWeaponDataTable>(FName("AssaultRifle"), TEXT(""));
 			break;
+		case EWeaponType::EWT_Pistol:
+			WeaponDataRow = WeaponTableObject->FindRow<FWeaponDataTable>(FName("Pistol"), TEXT(""));
+			break;
 		default:
 			break;
 		}
@@ -105,8 +117,21 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 			PreviousMaterialIndex = GetMaterialIndex();
 			GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
 			SetMaterialIndex(WeaponDataRow->MaterialIndex);
-		}
+			SetClipBoneName(WeaponDataRow->ClipBoneName);
+			SetReloadMontageSection(WeaponDataRow->ReloadMontageSection);
+			GetItemMesh()->SetAnimInstanceClass(WeaponDataRow->AnimBP);
 
+			CrosshairMiddle = WeaponDataRow->CrosshairMiddle;
+			CrosshairLeft = WeaponDataRow->CrosshairLeft;
+			CrosshairRight = WeaponDataRow->CrosshairRight;
+			CrosshairTop = WeaponDataRow->CrosshairTop;
+			CrosshairBottom = WeaponDataRow->CrosshairBottom;
+			AutoFireRate = WeaponDataRow->AutoFireRate;
+			MuzzleFlash = WeaponDataRow->MuzzleFlash;
+			FireSound = WeaponDataRow->FireSound;
+			BoneToHide = WeaponDataRow->BoneToHide;
+			bAutoMatic = WeaponDataRow->bAutoMatic;	
+		}
 		
 		if (GetMaterialInstance())
 		{
@@ -116,6 +141,34 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 			GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
 			EnableGlowMaterial();
 		}
+	}
+}
+
+void AWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (BoneToHide != FName(""))
+	{
+		GetItemMesh()->HideBoneByName(BoneToHide, PBO_None);
+	}
+	
+}
+
+void AWeapon::FinishMovingSlide()
+{
+	bMovingSlide = false;
+}
+
+void AWeapon::UpdateSlideDisplacement()
+{
+	if (SlideDisplacementCurve && bMovingSlide)
+	{
+		const float ElapsedTime { GetWorldTimerManager().GetTimerElapsed(SlideTimer) };
+		const float CurveValue { SlideDisplacementCurve->GetFloatValue(ElapsedTime) };
+
+		SlideDisplacement = CurveValue * MaxSlideDisplacement;
+		RecoilRotation = CurveValue * MaxRecoilRotation;
 	}
 }
 
@@ -129,6 +182,12 @@ void AWeapon::DecrementAmmo()
 	{
 		--Ammo;
 	}
+}
+
+void AWeapon::StartSlideTimer()
+{
+	bMovingSlide = true;
+	GetWorldTimerManager().SetTimer(SlideTimer, this, &AWeapon::FinishMovingSlide, SlideDisplacementTime);
 }
 
 void AWeapon::ReloadAmmo(int32 Amount)
