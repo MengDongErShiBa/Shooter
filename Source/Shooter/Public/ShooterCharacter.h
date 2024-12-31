@@ -246,6 +246,10 @@ protected:
 
 	// 高亮显示插槽
 	void HighlightInventorySlot();
+
+	UFUNCTION(BlueprintCallable)
+	EPhysicalSurface GetSurfaceType();
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
