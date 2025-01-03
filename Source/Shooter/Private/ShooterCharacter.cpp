@@ -5,6 +5,7 @@
 
 #include "../Shooter.h"
 #include "Ammo.h"
+#include "BulletHitInterface.h"
 #include "Item.h"
 #include "Weapon.h"
 #include "Camera/CameraComponent.h"
@@ -266,10 +267,12 @@ void AShooterCharacter::FireWeapon()
 	}
 }
 
-bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
+bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult)
 {
 	// 检查准心是否命中
 	FHitResult CrosshairHitResult;
+	FVector OutBeamLocation;
+	
 	bool bCrosshairHit = TraceUnderCrosshairs(CrosshairHitResult, OutBeamLocation);
 
 	if (bCrosshairHit)
@@ -284,20 +287,19 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
 
 	// 执行第二次追踪，这次从枪口开始
 	// 武器追踪碰撞
-	FHitResult WeaponTraceHit;
 	const FVector WeaponTraceStart{ MuzzleSocketLocation };
 	const FVector StartToEnd { OutBeamLocation - MuzzleSocketLocation };
 	const FVector WeaponTraceEnd{ MuzzleSocketLocation + StartToEnd * 1.25f };
 	// 检查武器通道是否有碰撞
-	GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECC_Visibility);
+	GetWorld()->LineTraceSingleByChannel(OutHitResult, WeaponTraceStart, WeaponTraceEnd, ECC_Visibility);
 
-	if (WeaponTraceHit.bBlockingHit)
+	if (!OutHitResult.bBlockingHit)
 	{
-		OutBeamLocation = WeaponTraceHit.Location;
-		return true;
+		OutHitResult.Location = OutBeamLocation;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 void AShooterCharacter::AimingButtonPressed()
@@ -722,21 +724,37 @@ void AShooterCharacter::SendBullet()
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EquippedWeapon->GetMuzzleFlash(), SocketTransform);
 		}
 
-		FVector BeamEnd;
-		bool bBeamEnd = GetBeamEndLocation(SocketTransform.GetLocation(), BeamEnd);
+		FHitResult BeamHitResult;
+		bool bBeamEnd = GetBeamEndLocation(SocketTransform.GetLocation(), BeamHitResult);
 
 		if (bBeamEnd)
 		{
-			if (ImpactParticles)
+
+			// 检查Actor是否实现了子弹命中接口
+			if (BeamHitResult.GetActor())
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
+				if (IBulletHitInterface* BulletHitInterface = Cast<IBulletHitInterface>(BeamHitResult.GetActor()))
+				{
+					// 执行命中效果
+					BulletHitInterface->BulletHit_Implementation(BeamHitResult);
+				};
 			}
+			else
+			{
+				// 没有命中播放自己的效果
+				if (ImpactParticles)
+				{
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamHitResult.Location);
+				}
+			}
+			
+			
 
 			//烟雾效果
 			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);
 			if (Beam)
 			{
-				Beam->SetVectorParameter(FName("Target"), BeamEnd);
+				Beam->SetVectorParameter(FName("Target"), BeamHitResult.Location);
 			}
 		}
 	}

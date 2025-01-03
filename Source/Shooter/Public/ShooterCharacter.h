@@ -100,7 +100,7 @@ protected:
 	 * @param OutBeamLocation 输出爆炸位置
 	 * @return 
 	 */
-	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
+	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult);
 
 	/**
 	 * 瞄准按钮按下

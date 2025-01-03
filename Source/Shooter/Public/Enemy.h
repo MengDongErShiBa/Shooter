@@ -8,7 +8,7 @@
 #include "Enemy.generated.h"
 
 UCLASS()
-class SHOOTER_API AEnemy : public ACharacter, IBulletHitInterface
+class SHOOTER_API AEnemy : public ACharacter, public IBulletHitInterface
 {
 	GENERATED_BODY()
 
@@ -36,5 +36,4 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void BulletHit_Implementation(FHitResult HitResult) override;
-
 };
