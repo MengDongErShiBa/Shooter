@@ -87,6 +87,20 @@ private:
 	// HitNumber从屏幕上删除前的时间
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float HitNumberDestroyTime;
+
+	// AI的行为树
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BehaviorTree, meta = (AllowPrivateAccess = "true"))
+	class UBehaviorTree* BehaviorTree;
+
+	// MakeEditWidget 在编辑器下构建一个Widget方便看清
+	// 敌人移动的点位
+	UPROPERTY(EditAnywhere, Category = BehaviorTree, meta = (AllowPrivateAccess = "true", MakeEditWidget = "true"))
+	FVector PatrolPoint;
+
+	UPROPERTY(EditAnywhere, Category = BehaviorTree, meta = (AllowPrivateAccess = "true", MakeEditWidget = "true"))
+	FVector PatrolPoint2;
+
+	class AEnemyController* EnemyController;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -103,4 +117,6 @@ public:
 	// ShootCharacter处调用
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowHitNumber(int32 Damage, FVector HitLocation, bool bHeadShot);
+
+	FORCEINLINE UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 };

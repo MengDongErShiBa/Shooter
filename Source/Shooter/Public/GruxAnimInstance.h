@@ -13,5 +13,16 @@ UCLASS()
 class SHOOTER_API UGruxAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void UpdateAnimation(float DeltaTime);
+
+private:
+	// 侧面移动速度
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float Speed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	class AEnemy* Enemy;
 };
