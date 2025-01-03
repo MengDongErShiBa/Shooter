@@ -86,6 +86,13 @@ struct FWeaponDataTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bAutoMatic;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HeadShotDamage;
+	
 };
 
 /**
@@ -218,6 +225,14 @@ private:
 	// 自动射击为True
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon Properties", meta=(AllowPrivateAccess = "true"))
 	bool bAutoMatic;
+
+	// 一般伤害
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon Properties", meta=(AllowPrivateAccess = "true"))
+	float Damage;
+
+	// 爆头伤害
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon Properties", meta=(AllowPrivateAccess = "true"))
+	float HeadShotDamage;
 public:
 	// 扔出武器，施加冲击力
 	void ThrowWeapon();
@@ -238,6 +253,8 @@ public:
 	FORCEINLINE UParticleSystem* GetMuzzleFlash() const { return MuzzleFlash; }
 	FORCEINLINE USoundCue* GetFireSound() const { return FireSound; }
 	FORCEINLINE bool GetAutoMatic() const { return bAutoMatic; }
+	FORCEINLINE float GetDamage() const { return Damage; }
+	FORCEINLINE float GetHeadShotDamage() const { return HeadShotDamage; }
 
 	void StartSlideTimer();
 

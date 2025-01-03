@@ -6,6 +6,7 @@
 #include "../Shooter.h"
 #include "Ammo.h"
 #include "BulletHitInterface.h"
+#include "Enemy.h"
 #include "Item.h"
 #include "Weapon.h"
 #include "Camera/CameraComponent.h"
@@ -738,6 +739,25 @@ void AShooterCharacter::SendBullet()
 					// 执行命中效果
 					BulletHitInterface->BulletHit_Implementation(BeamHitResult);
 				};
+
+				if (AEnemy* Enemy = Cast<AEnemy>(BeamHitResult.GetActor()))
+				{
+					int Damage {};
+					if (BeamHitResult.BoneName.ToString() == Enemy->GetHeadBone())
+					{
+						Damage = EquippedWeapon->GetHeadShotDamage();
+						// 爆头
+						UGameplayStatics::ApplyDamage(BeamHitResult.GetActor(), EquippedWeapon->GetHeadShotDamage(), GetController(), this, UDamageType::StaticClass());
+						Enemy->ShowHitNumber(Damage, BeamHitResult.Location, true);
+					}
+					else
+					{
+						Damage = EquippedWeapon->GetDamage();
+						// 其他部位
+						UGameplayStatics::ApplyDamage(BeamHitResult.GetActor(), EquippedWeapon->GetDamage(), GetController(), this, UDamageType::StaticClass());
+						Enemy->ShowHitNumber(Damage, BeamHitResult.Location, false);
+					}
+				}
 			}
 			else
 			{
@@ -747,8 +767,6 @@ void AShooterCharacter::SendBullet()
 					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamHitResult.Location);
 				}
 			}
-			
-			
 
 			//烟雾效果
 			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);

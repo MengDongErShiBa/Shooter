@@ -130,7 +130,9 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 			MuzzleFlash = WeaponDataRow->MuzzleFlash;
 			FireSound = WeaponDataRow->FireSound;
 			BoneToHide = WeaponDataRow->BoneToHide;
-			bAutoMatic = WeaponDataRow->bAutoMatic;	
+			bAutoMatic = WeaponDataRow->bAutoMatic;
+			Damage = WeaponDataRow->Damage;
+			HeadShotDamage = WeaponDataRow->HeadShotDamage;
 		}
 		
 		if (GetMaterialInstance())
