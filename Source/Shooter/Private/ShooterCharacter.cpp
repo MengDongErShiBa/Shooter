@@ -78,7 +78,9 @@ AShooterCharacter::AShooterCharacter() :
 	PickupSoundResetTime(0.2f),
 	EquipSoundResetTime(0.2f),
 	// Icon 动画属性
-	HighlightedSlot(-1)
+	HighlightedSlot(-1),
+	Health(100.f),
+	MaxHealth(100.f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -140,6 +142,17 @@ AShooterCharacter::AShooterCharacter() :
 	InterpCom6 = CreateDefaultSubobject<USceneComponent>(TEXT("Interpolation Component 6"));
 	InterpCom6->SetupAttachment(GetFollowCamera());
 
+}
+
+float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	Health -= DamageAmount;
+	if (Health <= 0)
+	{
+		Health = 0;
+	}
+	return DamageAmount;
 }
 
 // Called when the game starts or when spawned
